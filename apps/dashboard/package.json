@@ -24,6 +24,7 @@
     "tailwindcss": "3.3.3",
     "tsconfig": "workspace:*",
     "typescript": "^5.2.2",
-    "ui": "workspace:*"
+    "ui": "workspace:*",
+    "db": "workspace:*"
   }
 }

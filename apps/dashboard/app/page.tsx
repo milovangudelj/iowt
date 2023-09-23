@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Card } from "ui";
+import { prisma } from "db";
 
 function Gradient({
   conic,
@@ -43,7 +44,9 @@ const LINKS = [
   },
 ];
 
-export default function Page(): JSX.Element {
+export default async function Page(): Promise<JSX.Element> {
+  const users = await prisma.publicProfile.findMany();
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
@@ -70,6 +73,11 @@ export default function Page(): JSX.Element {
           </a>
         </div>
       </div>
+      <ul>
+        {users.map((user) => (
+          <li key={user.id}>{user.name}</li>
+        ))}
+      </ul>
 
       <div className="relative flex place-items-center ">
         <div className="font-sans w-auto pb-16 pt-[48px] md:pb-24 lg:pb-32 md:pt-16 lg:pt-20 flex justify-between gap-8 items-center flex-col relative z-0">
