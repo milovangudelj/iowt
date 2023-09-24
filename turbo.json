@@ -7,23 +7,25 @@
       "dependsOn": ["^db:generate", "^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
+    "dev": {
+      "dependsOn": ["^db:generate"],
+      "cache": false,
+      "persistent": true
+    },
     "lint": {
       "dependsOn": ["^build"]
     },
-    "check-types": {},
-    "db:migrate:deploy": {},
-    "db:push": {},
-    "db:pull": {},
-    "db:seed": {},
-    "db:generate": {},
-    "dev": {
-      "cache": false,
-      "persistent": true
+    "clean": {
+      "cache": false
     },
     "generate": {
       "dependsOn": ["^generate"]
     },
-    "clean": {
+    "check-types": {},
+    "db:generate": {
+      "cache": false
+    },
+    "db:push": {
       "cache": false
     }
   }

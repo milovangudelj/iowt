@@ -1,7 +1,6 @@
-import type { PublicProfile } from "@prisma/client";
-import { prisma } from ".";
+import { prisma, type PublicProfile } from ".";
 
-const DEFAULT_USERS = [
+const DEFAULT_PROFILES = [
   // Add your own user to pre-populate the database with
   {
     name: "Milovan Gudelj",
@@ -16,16 +15,16 @@ const DEFAULT_USERS = [
 (async () => {
   try {
     await Promise.all(
-      DEFAULT_USERS.map((publicProfile) =>
+      DEFAULT_PROFILES.map((profile) =>
         prisma.publicProfile.upsert({
           where: {
-            email: publicProfile.email!,
+            email: profile.email!,
           },
           update: {
-            ...publicProfile,
+            ...profile,
           },
           create: {
-            ...publicProfile,
+            ...profile,
           },
         })
       )
