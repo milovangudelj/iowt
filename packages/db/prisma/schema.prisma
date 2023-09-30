@@ -6,14 +6,213 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
-model PublicProfile {
-  id            String    @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
+model User {
+  id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  role Role   @default(USER)
+
+  email String @unique
+  phone String
+
+  name    String
+  surname String
+
+  athlete Athlete?
+}
+
+model Athlete {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  birth_date  DateTime
+  birth_place String
+  nationality String
+  gender      String
+  fiscal_code String?
+
+  address  String
+  city     String
+  province String
+  zip_code String
+  country  String
+
+  medical_certificate                 String?
+  medical_certificate_expiration_date DateTime?
+  medical_certificate_valid           Boolean   @default(false)
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique @db.Uuid
+
+  team   Team?   @relation(fields: [teamId], references: [id])
+  teamId String? @db.Uuid
+
+  races               Race[]
+  results             Result[]
+  partialRelayResults RelayFraction[]
+  relayTeams          RelayTeam[]
+}
+
+model Team {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  description String?
+  logo        String?
+  website     String?
+  country     String
+
+  athletes Athlete[]
+}
+
+model RelayTeam {
+  id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String
+
+  athletes Athlete[]
+  races    Race[]
+  results  RelayResult[]
+}
+
+model Competition {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  description String?
+
+  start_date DateTime
+  end_date   DateTime
+
+  venue   Venue  @relation(fields: [venueId], references: [id])
+  venueId String @db.Uuid
+
+  races Race[]
+}
+
+model Race {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  description String?
+  distance    Int // meters
+  fraction    Int // meters
+  max_time    Int? // milliseconds
+  indoors     Boolean
+  relay       Boolean
+
+  when DateTime
+
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  competitionId String      @db.Uuid
+
+  athletes Athlete[]
+  results  Result[]
+
+  relayTeams   RelayTeam[]
+  relayResults RelayResult[]
+}
+
+model Result {
+  id      String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  time    Int // milliseconds
+  arrival DateTime
+  place   Int
+  gap     Int // milliseconds
+  pace    Int // milliseconds
+
+  athlete   Athlete  @relation(fields: [athleteId], references: [id])
+  athleteId String   @db.Uuid
+  race      Race     @relation(fields: [raceId], references: [id])
+  raceId    String   @db.Uuid
+  category  Category
+}
+
+model RelayFraction {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  distance Int // meters
+  leg      Int // order number in the relay
+  time     Int // milliseconds
+  place    Int
+  gap      Int // milliseconds
+  pace     Int // milliseconds
+
+  athlete       Athlete     @relation(fields: [athleteId], references: [id])
+  athleteId     String      @db.Uuid
+  relayResult   RelayResult @relation(fields: [relayResultId], references: [id])
+  relayResultId String      @db.Uuid
+}
+
+model RelayResult {
+  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  time  Int // milliseconds
+  place Int
+  gap   Int // milliseconds
+  pace  Int // milliseconds
+
+  team                RelayTeam       @relation(fields: [teamId], references: [id])
+  teamId              String          @db.Uuid
+  race                Race            @relation(fields: [raceId], references: [id])
+  raceId              String          @db.Uuid
+  partialRelayResults RelayFraction[]
+  category            Category
+}
+
+model Venue {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  description String?
+  website     String?
+  address     String
+  city        String
+  province    String
+  zip_code    String
+  country     String
+  latitude    Decimal @db.Decimal(8, 6)
+  longitude   Decimal @db.Decimal(9, 6)
+
+  competitions Competition[]
+}
+
+enum Category {
+  // Relays
+  M320
+  M280
+  M240
+  M200
+  M160
+  M120
+  M100
+
+  // Over 25 - Master
+  M95
+  M90
+  M85
+  M80
+  M75
+  M70
+  M65
+  M60
+  M55
+  M50
+  M45
+  M40
+  M35
+  M30
+  M25
+
+  // Under 25
+  S
+  C2
+  C1
+  J2
+  J1
+  R2
+  R1
+  R14
+  EA
+  EB
+}
+
+enum Role {
+  ADMIN
+  USER
 }
