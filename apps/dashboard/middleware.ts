@@ -1,21 +1,34 @@
-// import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
-// import { NextResponse } from "next/server";
+import { authMiddleware } from "@clerk/nextjs";
+import { NextResponse } from "next/server";
 
-// export default authMiddleware({
-//   afterAuth(auth, req, evt) {
-//     if (!auth.userId && !auth.isPublicRoute) {
-//       const loginUrl = new URL("/login", req.url);
+const authRoutes = ["/signin", "/signup"];
 
-//       // Add ?from=/incoming-url to the /login URL
-//       loginUrl.searchParams.set("from", req.nextUrl.pathname);
+export default authMiddleware({
+  afterAuth(auth, req, evt) {
+    const redirectTo = decodeURI(
+      req.nextUrl.searchParams.get("redirectTo") ?? "/"
+    );
 
-//       return NextResponse.redirect(loginUrl);
-//     }
-//   },
-// });
+    if (
+      auth.userId &&
+      authRoutes.some(
+        (route) => route.localeCompare(req.nextUrl.pathname) === 0
+      )
+    )
+      return NextResponse.redirect(new URL(redirectTo, req.url));
 
-// export const config = {
-//   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
-// };
+    if (!auth.userId && !auth.isPublicRoute) {
+      const signinUrl = new URL("/signin", req.url);
 
-export default function handler() {}
+      // Add ?redirectTo=/incoming-url to the /signin URL
+      signinUrl.searchParams.set("redirectTo", req.nextUrl.pathname);
+
+      return NextResponse.redirect(signinUrl);
+    }
+  },
+  publicRoutes: authRoutes,
+});
+
+export const config = {
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api)(.*)"],
+};

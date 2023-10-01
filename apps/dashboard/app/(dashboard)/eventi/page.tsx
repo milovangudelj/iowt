@@ -1,6 +1,12 @@
 import { prisma } from "db";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Eventi - IOWT",
+  description: "Eventi in programma per l'IOWT 2023",
+};
 
 export default async function Page(): Promise<JSX.Element> {
   const competitions = await prisma.competition.findMany({

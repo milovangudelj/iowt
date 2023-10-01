@@ -29,5 +29,8 @@
     "tsconfig": "workspace:*",
     "typescript": "^5.2.2",
     "ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.6"
   }
 }
