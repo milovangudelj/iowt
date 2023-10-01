@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 body {
-  @apply text-black dark:text-white leading-[1.25]
+  @apply ui-text-black dark:ui-text-white ui-leading-[1.25]
 }

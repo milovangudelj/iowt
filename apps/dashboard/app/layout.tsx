@@ -1,7 +1,12 @@
 import "./globals.css";
 import "ui/styles.css";
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { useAuth, useSession } from "@clerk/nextjs";
+import { createClient } from "@supabase/supabase-js";
+
+import { Navbar } from "ui";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,7 +22,10 @@ export default function RootLayout({
 }): JSX.Element {
   return (
     <html lang="en">
-      <body className={`bg-zinc-900 ${inter.className}`}>{children}</body>
+      <body className={`bg-gray-900 flex ${inter.className}`}>
+        <Navbar />
+        {children}
+      </body>
     </html>
   );
 }

@@ -1,0 +1,14 @@
+{
+  "name": "icons",
+  "version": "0.0.0",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {},
+  "dependencies": {
+    "@phosphor-icons/react": "^2.0.13"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.1",
+    "tsx": "^3.12.10"
+  }
+}
