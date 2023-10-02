@@ -24,8 +24,10 @@ export function FormInput({
 
   return type === "password" ? (
     <div
-      className={`ui-flex ui-overflow-hidden ui-items-center ui-bg-gray-900 ui-transition hover:ui-border-teal-600 ui-rounded-lg ui-border ui-border-rounded-lg ui-border-white/[0.06] ${
-        inputFocused ? "ui-ring-teal-900 ui-ring-4 ui-border-teal-600" : ""
+      className={`ui-flex ui-overflow-hidden ui-items-center ui-bg-gray-900 ui-transition hover:ui-border-teal-600 ui-rounded-lg ui-border ui-border-rounded-lg ${
+        inputFocused
+          ? "ui-ring-teal-900 ui-ring-4 ui-border-teal-600"
+          : "ui-border-white/[0.06]"
       }`}
     >
       <input
