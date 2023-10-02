@@ -7,3 +7,4 @@ export * from "./logo";
 export * from "./auth-form";
 export * from "./sign-in-form";
 export * from "./sign-up-form";
+export * from "./form-input";

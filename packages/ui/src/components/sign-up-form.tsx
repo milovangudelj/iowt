@@ -3,109 +3,194 @@
 import { useSignUp } from "@clerk/nextjs";
 import Link from "next/link";
 import { redirect, useSearchParams } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
-import { Button } from "./";
+import { Button, FormInput } from "./";
+
+const schema = z.object({
+  email: z
+    .string()
+    .email({ message: "Inserisci un indirizzo email valido." })
+    .min(1, { message: "Inserisci la tua email per accedere." }),
+  password: z
+    .string()
+    .min(12, { message: "La password deve essere lunga almeno 12 caratteri." })
+    .max(64, { message: "La password non deve avere più di 64 caratteri." }),
+  code: z
+    .string()
+    .regex(/^\d*$/, { message: "Inserisci un codice numerico valido." })
+    .min(6, { message: "Il codice deve essere lungo 6 cifre." })
+    .max(6, { message: "Il codice deve essere lungo 6 cifre." })
+    .optional(),
+});
+type SignUpFormSchema = z.infer<typeof schema>;
+
+const errorMessages: { [key: string]: string } = {
+  form_identifier_exists: "Questa email è già collegata ad un account.",
+  form_code_incorrect: "Il codice inserito non è corretto.",
+};
 
 export function SignUpForm() {
   const searchParams = useSearchParams();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [code, setCode] = useState("");
   const [verificationInitiated, setVerificationInitiated] = useState(false);
+
+  const {
+    control,
+    setError,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormSchema>({
+    resolver: zodResolver(schema),
+  });
 
   const { isLoaded, signUp, setActive } = useSignUp();
 
-  async function handleVerification(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
+  async function handleVerification(code: string) {
     await signUp
       ?.attemptEmailAddressVerification({ code })
       .then((result) => {
         if (result.status === "complete") {
-          console.log("Email address verified. Sign up complete.");
           setActive({ session: result.createdSessionId });
 
           redirect(searchParams.get("redirectTo") ?? "/");
         }
       })
-      .catch((err) =>
-        console.error("Email verification error:", err.errors[0].longMessage)
-      );
+      .catch((err) => {
+        const errorCode = err.errors[0].code as string | undefined;
+        const field = errorCode === "form_code_incorrect" ? "code" : "email";
+
+        setError(field, {
+          message: errorCode
+            ? errorMessages[errorCode] ?? "Errore sconosciuto."
+            : "Errore sconosciuto.",
+        });
+      });
   }
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<SignUpFormSchema> = async (data) => {
+    if (verificationInitiated) {
+      if (data.code === undefined) {
+        setError("code", {
+          message: "Inserisci il codice che ti abbiamo inviato.",
+        });
+        return;
+      }
+
+      return handleVerification(data.code);
+    }
 
     await signUp
       ?.create({
-        emailAddress: email,
-        password,
+        emailAddress: data.email,
+        password: data.password,
       })
       .then(() => {
         signUp.prepareEmailAddressVerification();
         setVerificationInitiated(true);
       })
-      .catch((err) =>
-        console.error("Sign up error:", err.errors[0].longMessage)
-      );
-  }
+      .catch((err) => {
+        const errorCode = err.errors[0].code as string | undefined;
+        const field =
+          errorCode === "form_password_incorrect" ? "password" : "email";
 
-  return isLoaded ? (
-    verificationInitiated ? (
+        setError(field, {
+          message: errorCode
+            ? errorMessages[errorCode] ?? "Errore sconosciuto."
+            : "Errore sconosciuto.",
+        });
+
+        console.log("Error code", errorCode);
+      });
+  };
+
+  return (
+    <div className="ui-flex ui-flex-col ui-gap-4 ui-w-full ui-max-w-sm">
+      {verificationInitiated && (
+        <div className="ui-mb-4">
+          <h1 className="ui-text-2xl ui-font-bold ui-mb-4">
+            Verifica la tua mail
+          </h1>
+          <p className="ui-text-white/70">
+            Inserisci il codice che ti abbiamo inviato per verificare la tua
+            mail.
+          </p>
+        </div>
+      )}
       <form
-        onSubmit={handleVerification}
+        onSubmit={handleSubmit(onSubmit)}
         className="ui-flex ui-flex-col ui-gap-4"
       >
-        <div className="ui-flex ui-flex-col ui-gap-1">
-          <label htmlFor="code">Code</label>
-          <input
-            type="text"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            className="ui-bg-gray-900 ui-rounded-lg ui-border ui-border-rounded-lg ui-border-white/[0.06]"
+        <div
+          className={`${
+            verificationInitiated ? "ui-hidden" : "ui-block"
+          } ui-flex ui-flex-col ui-gap-1`}
+        >
+          <label htmlFor="email">Email</label>
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <FormInput {...field} placeholder="mario.rossi@esempio.it" />
+            )}
           />
+          {errors.email && (
+            <p className="ui-text-[#dd4400] ui-text-sm">
+              {errors.email.message}
+            </p>
+          )}
         </div>
-        <Button>Verify</Button>
+        <div
+          className={`${
+            verificationInitiated ? "ui-hidden" : "ui-block"
+          } ui-flex ui-flex-col ui-gap-1`}
+        >
+          <label htmlFor="password">Password</label>
+          <Controller
+            name="password"
+            control={control}
+            render={({ field }) => <FormInput {...field} type="password" />}
+          />
+          {errors.password && (
+            <p className="ui-text-[#dd4400] ui-text-sm">
+              {errors.password.message}
+            </p>
+          )}
+        </div>
+        <div
+          className={`${
+            verificationInitiated ? "ui-block" : "ui-hidden"
+          } ui-flex ui-flex-col ui-gap-1`}
+        >
+          <label htmlFor="code">Codice</label>
+          <Controller
+            name="code"
+            control={control}
+            render={({ field }) => <FormInput {...field} />}
+          />
+          {errors.code && (
+            <p className="ui-text-[#dd4400] ui-text-sm">
+              {errors.code.message}
+            </p>
+          )}
+        </div>
+        <Button aria-disabled={!isLoaded}>
+          {verificationInitiated ? "Verifica" : "Registrati"}
+        </Button>
       </form>
-    ) : (
-      <div className="ui-flex ui-flex-col ui-gap-4">
-        <form onSubmit={handleSubmit} className="ui-flex ui-flex-col ui-gap-4">
-          <div className="ui-flex ui-flex-col ui-gap-1">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="ui-bg-gray-900 ui-rounded-lg ui-border ui-border-rounded-lg ui-border-white/[0.06]"
-            />
-          </div>
-          <div className="ui-flex ui-flex-col ui-gap-1">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="ui-bg-gray-900 ui-rounded-lg ui-border ui-border-rounded-lg ui-border-white/[0.06]"
-            />
-          </div>
-          <Button>Sign up</Button>
-        </form>
-        <p>
-          Already have an account?{" "}
-          <Link
-            href={`/signin${
-              searchParams.size !== 0 ? "?".concat(searchParams.toString()) : ""
-            }`}
-            className="ui-text-teal-700"
-          >
-            Sign in
-          </Link>
-        </p>
-      </div>
-    )
-  ) : (
-    <p>Loading...</p>
+      <p>
+        Hai già un account?{" "}
+        <Link
+          href={`/signin${
+            searchParams.size !== 0 ? "?".concat(searchParams.toString()) : ""
+          }`}
+          className="ui-text-teal-700"
+        >
+          Accedi
+        </Link>
+      </p>
+    </div>
   );
 }

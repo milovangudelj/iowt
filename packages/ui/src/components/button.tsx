@@ -13,7 +13,7 @@ export function Button({
 }: ButtonProps): JSX.Element {
   return (
     <button
-      className="ui-bg-teal-500 ui-p-3 ui-rounded-lg ui-font-semibold ui-text-black"
+      className="ui-bg-teal-500 hover:ui-bg-teal-600 focus:ui-bg-teal-600 focus:ui-outline-none focus:ui-ring-4 focus:ui-ring-teal-900 ui-transition ui-p-3 ui-rounded-lg ui-font-semibold ui-text-black"
       {...rest}
     >
       {children}
