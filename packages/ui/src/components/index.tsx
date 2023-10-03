@@ -1,6 +1,7 @@
 // components
 export * from "./card";
 export * from "./nav-link";
+export * from "./nav-user";
 export * from "./button";
 export * from "./navbar";
 export * from "./logo";

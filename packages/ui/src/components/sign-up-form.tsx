@@ -3,14 +3,28 @@
 import { useSignUp } from "@clerk/nextjs";
 import Link from "next/link";
 import { redirect, useSearchParams } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { parsePhoneNumber } from "libphonenumber-js/mobile";
 
 import { Button, FormInput } from "./";
 
 const schema = z.object({
+  name: z
+    .string()
+    .min(1, { message: "Inserisci il tuo nome per registrarti." }),
+  surname: z
+    .string()
+    .min(1, { message: "Inserisci il tuo cognome per registrarti." }),
+  phoneNumber: z.string().refine(
+    (value) => {
+      const phoneNumber = parsePhoneNumber(value, "IT");
+      return phoneNumber.isValid();
+    },
+    { message: "Inserisci un numero di telefono valido." }
+  ),
   email: z
     .string()
     .email({ message: "Inserisci un indirizzo email valido." })
@@ -51,9 +65,17 @@ export function SignUpForm() {
   async function handleVerification(code: string) {
     await signUp
       ?.attemptEmailAddressVerification({ code })
-      .then((result) => {
-        if (result.status === "complete") {
+      .then(async (result) => {
+        if (result.status === "complete" && result.createdUserId) {
           setActive({ session: result.createdSessionId });
+
+          await fetch("/api/completeUser", {
+            method: "POST",
+            body: JSON.stringify({
+              role: "USER",
+              userId: result.createdUserId,
+            }),
+          });
 
           redirect(searchParams.get("redirectTo") ?? "/");
         }
@@ -86,6 +108,11 @@ export function SignUpForm() {
       ?.create({
         emailAddress: data.email,
         password: data.password,
+        firstName: data.name,
+        lastName: data.surname,
+        unsafeMetadata: {
+          phoneNumber: data.phoneNumber,
+        },
       })
       .then(() => {
         signUp.prepareEmailAddressVerification();
@@ -123,6 +150,57 @@ export function SignUpForm() {
         onSubmit={handleSubmit(onSubmit)}
         className="ui-flex ui-flex-col ui-gap-4"
       >
+        <div
+          className={`${
+            verificationInitiated ? "ui-hidden" : "ui-block"
+          } ui-flex ui-flex-col ui-gap-1`}
+        >
+          <label htmlFor="name">Nome</label>
+          <Controller
+            name="name"
+            control={control}
+            render={({ field }) => <FormInput {...field} />}
+          />
+          {errors.name && (
+            <p className="ui-text-[#dd4400] ui-text-sm">
+              {errors.name.message}
+            </p>
+          )}
+        </div>
+        <div
+          className={`${
+            verificationInitiated ? "ui-hidden" : "ui-block"
+          } ui-flex ui-flex-col ui-gap-1`}
+        >
+          <label htmlFor="surname">Cognome</label>
+          <Controller
+            name="surname"
+            control={control}
+            render={({ field }) => <FormInput {...field} />}
+          />
+          {errors.surname && (
+            <p className="ui-text-[#dd4400] ui-text-sm">
+              {errors.surname.message}
+            </p>
+          )}
+        </div>
+        <div
+          className={`${
+            verificationInitiated ? "ui-hidden" : "ui-block"
+          } ui-flex ui-flex-col ui-gap-1`}
+        >
+          <label htmlFor="phoneNumber">Numero di telefono</label>
+          <Controller
+            name="phoneNumber"
+            control={control}
+            render={({ field }) => <FormInput {...field} />}
+          />
+          {errors.phoneNumber && (
+            <p className="ui-text-[#dd4400] ui-text-sm">
+              {errors.phoneNumber.message}
+            </p>
+          )}
+        </div>
         <div
           className={`${
             verificationInitiated ? "ui-hidden" : "ui-block"

@@ -241,6 +241,9 @@ importers:
       iowt-tailwind-config:
         specifier: workspace:*
         version: link:../iowt-tailwind-config
+      libphonenumber-js:
+        specifier: ^1.10.45
+        version: 1.10.45
       next:
         specifier: ^13.5.3
         version: 13.5.3(react-dom@18.2.0)(react@18.2.0)
@@ -4759,6 +4762,10 @@ packages:
     dependencies:
       prelude-ls: 1.2.1
       type-check: 0.4.0
+
+  /libphonenumber-js@1.10.45:
+    resolution: {integrity: sha512-eeHcvGafEYCaKB4fo2uBINfG7j7PcGwBHUaTVfbwl/6KcjCgIKNlIOsSXVRp9BH10NQwmvvk+nQ1e/Yp4BGB7w==}
+    dev: true
 
   /lilconfig@2.1.0:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}

@@ -1,17 +1,9 @@
-"use client";
-
 import Link from "next/link";
 import { Calendar, Goggles, Sun, Trophy, UsersThree } from "icons";
-import { useAuth, useUser } from "@clerk/nextjs";
 
-import { NavLink, Logo, Button } from "./";
-import { useRouter } from "next/navigation";
+import { NavLink, Logo, NavUser } from "./";
 
 export function Navbar(): JSX.Element {
-  const router = useRouter();
-  const { signOut } = useAuth();
-  const { user } = useUser();
-
   return (
     <div className="ui-flex-1 ui-flex ui-flex-col ui-max-w-xs ui-px-4 ui-py-8 ui-gap-6 ui-bg-gray-950">
       <div className="flex ui-items-center ui-justify-between ui-pb-6 ui-border-b ui-border-white/[0.06]">
@@ -48,14 +40,7 @@ export function Navbar(): JSX.Element {
         </ul>
       </nav>
       <div className="ui-pt-6 ui-border-t ui-border-white/[0.06]">
-        <Button
-          onClick={() => {
-            signOut();
-            router.push("/signin");
-          }}
-        >
-          Logout
-        </Button>
+        <NavUser />
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
 import { Navbar } from "ui";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,11 +21,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }): JSX.Element {
   return (
-    <html lang="en">
-      <body className={`bg-gray-900 flex ${inter.className}`}>
-        <Navbar />
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`bg-gray-900 min-h-[100dvh] max-h-[100dvh] flex ${inter.className}`}
+        >
+          <Navbar />
+          <main className="max-w-7xl max-h-full mx-auto my-16 w-full">
+            {children}
+          </main>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
