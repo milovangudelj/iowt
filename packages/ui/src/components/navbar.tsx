@@ -11,7 +11,7 @@ export function Navbar(): JSX.Element {
           <Logo />
           <span className="ui-text-[19.2px] ui-font-medium">IOWT</span>
         </Link>
-        <button className="ui-p-1">
+        <button className="ui-p-2 hover:ui-bg-gray-900 ui-rounded ui-text-white/70 hover:ui-text-white ui-transition ui-border-white/[0.06]">
           <Sun size={16} />
         </button>
       </div>

@@ -9,13 +9,14 @@
   "sideEffects": [
     "**/*.css"
   ],
-  "main": "./dist/index.mjs",
+  "main": "./components/index.tsx",
   "files": [
-    "./dist/**/*"
+    "./dist/**/*",
+    "./src/components/**/*"
   ],
   "exports": {
     ".": [
-      "./dist/index.mjs",
+      "./src/components/index.tsx",
       "./dist/index.d.ts",
       "./dist/index.d.ts.map"
     ],
@@ -24,12 +25,11 @@
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "build:esbuild": "tsx build.ts",
     "build:types": "tsc",
     "build:css": "tailwindcss -i ./src/styles/globals.css -o ./dist/index.css --minify",
-    "build": "pnpm clean && pnpm build:esbuild && pnpm build:types && pnpm build:css",
+    "build": "pnpm clean && pnpm build:types && pnpm build:css",
     "lint": "eslint src/components/",
-    "dev": "pnpm clean && concurrently \"pnpm build:esbuild --watch\" \"pnpm build:types --watch\" \"pnpm build:css --watch\"",
+    "dev": "pnpm clean && concurrently \"pnpm build:types --watch\" \"pnpm build:css --watch\"",
     "clean": "rimraf dist"
   },
   "peerDependencies": {
