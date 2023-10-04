@@ -20,7 +20,8 @@
       "./dist/index.d.ts",
       "./dist/index.d.ts.map"
     ],
-    "./styles.css": "./dist/index.css"
+    "./styles.css": "./dist/index.css",
+    "./globals.css": "./src/styles/globals.css"
   },
   "types": "./dist/index.d.ts",
   "license": "MIT",
