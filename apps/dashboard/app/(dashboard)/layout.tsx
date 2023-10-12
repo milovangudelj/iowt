@@ -24,7 +24,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`bg-gray-900 min-h-[100dvh] max-h-[100dvh] flex ${inter.className}`}
+          className={`bg-surface-1 min-h-[100dvh] max-h-[100dvh] flex ${inter.className}`}
         >
           <Navbar />
           <main className="max-w-7xl max-h-full mx-auto my-16 w-full flex flex-col gap-8">

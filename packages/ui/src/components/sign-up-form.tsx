@@ -3,13 +3,27 @@
 import { useSignUp } from "@clerk/nextjs";
 import Link from "next/link";
 import { redirect, useSearchParams } from "next/navigation";
-import { useState } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { parsePhoneNumber } from "libphonenumber-js/mobile";
+import {
+  parsePhoneNumber,
+  CountryCode,
+  formatIncompletePhoneNumber,
+} from "libphonenumber-js/mobile";
 
-import { Button, FormInput } from "./";
+import { Button, Logo } from "./";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./form";
+import { Input } from "./input";
 
 const schema = z.object({
   name: z
@@ -51,14 +65,31 @@ export function SignUpForm() {
   const searchParams = useSearchParams();
   const [verificationInitiated, setVerificationInitiated] = useState(false);
 
-  const {
-    control,
-    setError,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignUpFormSchema>({
+  // const [phoneCountry, setPhoneCountry] = useState<CountryCode>("IT");
+
+  const form = useForm<SignUpFormSchema>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      name: "",
+      surname: "",
+      phoneNumber: "+39 347 678 7256",
+      email: "",
+      password: "",
+      code: "",
+    },
   });
+  const watchPhoneNumber = form.watch("phoneNumber");
+
+  // useEffect(() => {
+  //   const phoneNumber = formatIncompletePhoneNumber(
+  //     watchPhoneNumber,
+  //     phoneCountry
+  //   );
+
+  //   console.log(phoneNumber);
+
+  //   form.setValue("phoneNumber", phoneNumber);
+  // }, [watchPhoneNumber, phoneCountry]);
 
   const { isLoaded, signUp, setActive } = useSignUp();
 
@@ -84,7 +115,7 @@ export function SignUpForm() {
         const errorCode = err.errors[0].code as string | undefined;
         const field = errorCode === "form_code_incorrect" ? "code" : "email";
 
-        setError(field, {
+        form.setError(field, {
           message: errorCode
             ? errorMessages[errorCode] ?? "Errore sconosciuto."
             : "Errore sconosciuto.",
@@ -93,9 +124,11 @@ export function SignUpForm() {
   }
 
   const onSubmit: SubmitHandler<SignUpFormSchema> = async (data) => {
+    if (!isLoaded) return;
+
     if (verificationInitiated) {
       if (data.code === undefined) {
-        setError("code", {
+        form.setError("code", {
           message: "Inserisci il codice che ti abbiamo inviato.",
         });
         return;
@@ -123,148 +156,163 @@ export function SignUpForm() {
         const field =
           errorCode === "form_password_incorrect" ? "password" : "email";
 
-        setError(field, {
+        form.setError(field, {
           message: errorCode
             ? errorMessages[errorCode] ?? "Errore sconosciuto."
             : "Errore sconosciuto.",
         });
 
-        console.log("Error code", errorCode);
+        // console.log("Error code", errorCode);
       });
   };
 
   return (
-    <div className="ui-flex ui-flex-col ui-gap-4 ui-w-full ui-max-w-sm">
-      {verificationInitiated && (
-        <div className="ui-mb-4">
-          <h1 className="ui-text-2xl ui-font-bold ui-mb-4">
-            Verifica la tua mail
-          </h1>
-          <p className="ui-text-white/70">
-            Inserisci il codice che ti abbiamo inviato per verificare la tua
-            mail.
-          </p>
+    <div className="ui-flex ui-flex-col ui-gap-8 ui-p-8 ui-rounded-lg ui-border-outline-primary ui-border ui-w-full ui-max-w-[400px]">
+      <header className="ui-flex ui-flex-col ui-gap-2">
+        <Logo />
+        <h1 className="ui-text-[19.2px] ui-leading-[1.25] ui-font-medium">
+          {verificationInitiated
+            ? "Verifica la tua email"
+            : "Crea il tuo account"}
+        </h1>
+        <p className="ui-text-type-me">
+          {verificationInitiated
+            ? "Inserisci il codice che ti abbiamo inviato per verificare la tua email."
+            : "Per continuare su Italian Open Water Tour"}
+        </p>
+      </header>
+      {!verificationInitiated && (
+        <div className="ui-flex ui-items-center ui-gap-2">
+          <span className="ui-inline-block ui-h-px ui-flex-1 ui-bg-outline-primary"></span>
+          <span className="ui-text-sm ui-leading-[1.25] ui-text-type-le">
+            oppure
+          </span>
+          <span className="ui-inline-block ui-h-px ui-flex-1 ui-bg-outline-primary"></span>
         </div>
       )}
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="ui-flex ui-flex-col ui-gap-4"
-      >
-        <div
-          className={`${
-            verificationInitiated ? "ui-hidden" : "ui-block"
-          } ui-flex ui-flex-col ui-gap-1`}
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="ui-flex ui-flex-col ui-gap-4"
         >
-          <label htmlFor="name">Nome</label>
-          <Controller
+          <FormField
+            control={form.control}
+            rules={{
+              required: "Inserisci il tuo nome per registrarti.",
+            }}
             name="name"
-            control={control}
-            render={({ field }) => <FormInput {...field} />}
-          />
-          {errors.name && (
-            <p className="ui-text-[#dd4400] ui-text-sm">
-              {errors.name.message}
-            </p>
-          )}
-        </div>
-        <div
-          className={`${
-            verificationInitiated ? "ui-hidden" : "ui-block"
-          } ui-flex ui-flex-col ui-gap-1`}
-        >
-          <label htmlFor="surname">Cognome</label>
-          <Controller
-            name="surname"
-            control={control}
-            render={({ field }) => <FormInput {...field} />}
-          />
-          {errors.surname && (
-            <p className="ui-text-[#dd4400] ui-text-sm">
-              {errors.surname.message}
-            </p>
-          )}
-        </div>
-        <div
-          className={`${
-            verificationInitiated ? "ui-hidden" : "ui-block"
-          } ui-flex ui-flex-col ui-gap-1`}
-        >
-          <label htmlFor="phoneNumber">Numero di telefono</label>
-          <Controller
-            name="phoneNumber"
-            control={control}
-            render={({ field }) => <FormInput {...field} />}
-          />
-          {errors.phoneNumber && (
-            <p className="ui-text-[#dd4400] ui-text-sm">
-              {errors.phoneNumber.message}
-            </p>
-          )}
-        </div>
-        <div
-          className={`${
-            verificationInitiated ? "ui-hidden" : "ui-block"
-          } ui-flex ui-flex-col ui-gap-1`}
-        >
-          <label htmlFor="email">Email</label>
-          <Controller
-            name="email"
-            control={control}
             render={({ field }) => (
-              <FormInput {...field} placeholder="mario.rossi@esempio.it" />
+              <FormItem visible={!verificationInitiated}>
+                <FormLabel>Nome</FormLabel>
+                <FormControl>
+                  <Input placeholder="Mario" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
           />
-          {errors.email && (
-            <p className="ui-text-[#dd4400] ui-text-sm">
-              {errors.email.message}
-            </p>
-          )}
-        </div>
-        <div
-          className={`${
-            verificationInitiated ? "ui-hidden" : "ui-block"
-          } ui-flex ui-flex-col ui-gap-1`}
-        >
-          <label htmlFor="password">Password</label>
-          <Controller
+          <FormField
+            control={form.control}
+            rules={{
+              required: "Inserisci il tuo cognome per registrarti.",
+            }}
+            name="surname"
+            render={({ field }) => (
+              <FormItem visible={!verificationInitiated}>
+                <FormLabel>Cognome</FormLabel>
+                <FormControl>
+                  <Input placeholder="Rossi" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            rules={{
+              required: "Inserisci un numero di telefono valido.",
+            }}
+            name="phoneNumber"
+            render={({ field }) => (
+              <FormItem visible={!verificationInitiated}>
+                <FormLabel>Numero di telefono</FormLabel>
+                <FormControl>
+                  <Input type="tel" placeholder="123 123 1234" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            rules={{
+              required: "Inserisci la tua email per accedere.",
+            }}
+            render={({ field }) => (
+              <FormItem visible={!verificationInitiated}>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="mario.rossi@esempio.it"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="password"
-            control={control}
-            render={({ field }) => <FormInput {...field} type="password" />}
+            rules={{
+              required: "La password deve essere lunga almeno 12 caratteri.",
+            }}
+            render={({ field }) => (
+              <FormItem visible={!verificationInitiated}>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="12+ caratteri"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          {errors.password && (
-            <p className="ui-text-[#dd4400] ui-text-sm">
-              {errors.password.message}
-            </p>
-          )}
-        </div>
-        <div
-          className={`${
-            verificationInitiated ? "ui-block" : "ui-hidden"
-          } ui-flex ui-flex-col ui-gap-1`}
-        >
-          <label htmlFor="code">Codice</label>
-          <Controller
+          <FormField
+            control={form.control}
             name="code"
-            control={control}
-            render={({ field }) => <FormInput {...field} />}
+            render={({ field }) => (
+              <FormItem visible={verificationInitiated}>
+                <FormLabel>Codice</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="000000"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          {errors.code && (
-            <p className="ui-text-[#dd4400] ui-text-sm">
-              {errors.code.message}
-            </p>
-          )}
-        </div>
-        <Button aria-disabled={!isLoaded}>
-          {verificationInitiated ? "Verifica" : "Registrati"}
-        </Button>
-      </form>
-      <p>
+          <Button disabled={!isLoaded} aria-disabled={!isLoaded}>
+            {verificationInitiated ? "Verifica" : "Registrati"}
+          </Button>
+        </form>
+      </Form>
+      <p className="ui-text-type-me">
         Hai già un account?{" "}
         <Link
           href={`/signin${
             searchParams.size !== 0 ? "?".concat(searchParams.toString()) : ""
           }`}
-          className="ui-text-teal-700"
+          className="ui-text-type-link-me"
         >
           Accedi
         </Link>

@@ -1,5 +1,5 @@
 @import url('ui/globals.css');
 
 body {
-  @apply text-black dark:text-white leading-[1.25]
+  @apply text-type-he leading-[1.25];
 }

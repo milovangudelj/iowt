@@ -25,18 +25,18 @@ export default async function Page(): Promise<JSX.Element> {
               <h2 className="text-lg font-bold text-teal-500">
                 {competition.name}
               </h2>
-              <p className="text-white/70">
+              <p className="text-type-me">
                 Dal{" "}
-                <span className="font-medium text-white">
+                <span className="font-medium text-type-he">
                   {format(competition.start_date, "do MMM y", { locale: it })}
                 </span>{" "}
                 al{" "}
-                <span className="font-medium text-white">
+                <span className="font-medium text-type-he">
                   {format(competition.end_date, "do MMM y", { locale: it })}
                 </span>
               </p>
             </div>
-            <div className="flex gap-2 mt-2 text-sm text-white/40">
+            <div className="flex gap-2 mt-2 text-sm text-type-le">
               <span>{competition.venue.name}</span>
               <span>-</span>
               <span>{competition.venue.city}</span>

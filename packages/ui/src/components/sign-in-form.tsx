@@ -7,7 +7,7 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
-import { Button, FormInput } from "./";
+import { Button, Logo } from "./";
 
 const schema = z.object({
   email: z
@@ -67,42 +67,64 @@ export function SignInForm() {
   };
 
   return (
-    <div className="ui-flex ui-flex-col ui-gap-4 ui-w-full ui-max-w-sm">
+    <div className="ui-flex ui-flex-col ui-gap-8 ui-p-8 ui-rounded-lg ui-border-outline-primary ui-border ui-w-full ui-max-w-[400px]">
+      <header className="ui-flex ui-flex-col ui-gap-2">
+        <Logo />
+        <h1 className="ui-text-[19.2px] ui-leading-[1.25] ui-font-medium">
+          Accedi
+        </h1>
+        <p className="ui-text-type-me">
+          Per continuare su Italian Open Water Tour
+        </p>
+      </header>
+      <div className="ui-flex ui-items-center ui-gap-2">
+        <span className="ui-inline-block ui-h-px ui-flex-1 ui-bg-outline-primary"></span>
+        <span className="ui-text-sm ui-leading-[1.25] ui-text-type-le">
+          oppure
+        </span>
+        <span className="ui-inline-block ui-h-px ui-flex-1 ui-bg-outline-primary"></span>
+      </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="ui-flex ui-flex-col ui-gap-4"
       >
-        <div className="ui-flex ui-flex-col ui-gap-1">
-          <label htmlFor="email">Email</label>
+        {/* <FormElement>
+          <FormElement.Label htmlFor="email" label="Email" />
           <Controller
             name="email"
             control={control}
             render={({ field }) => (
-              <FormInput {...field} placeholder="mario.rossi@esempio.it" />
+              <FormElement.Input
+                type="text"
+                {...field}
+                aria-invalid={errors.email ? true : false}
+                aria-errormessage="email"
+                placeholder="mario.rossi@esempio.it"
+              />
             )}
           />
-          {errors.email && (
-            <p className="ui-text-[#dd4400] ui-text-sm">
-              {errors.email.message}
-            </p>
-          )}
-        </div>
-        <div className="ui-flex ui-flex-col ui-gap-1">
-          <label htmlFor="password">Password</label>
+          <FormElement.Error error={errors.email} errorFor="email" />
+        </FormElement>
+        <FormElement>
+          <FormElement.Label htmlFor="password" label="Password" />
           <Controller
             name="password"
             control={control}
-            render={({ field }) => <FormInput {...field} type="password" />}
+            render={({ field }) => (
+              <FormElement.Input
+                {...field}
+                type="password"
+                aria-invalid={errors.password ? true : false}
+                aria-errormessage="password"
+                placeholder="12+ characters"
+              />
+            )}
           />
-          {errors.password && (
-            <p className="ui-text-[#dd4400] ui-text-sm">
-              {errors.password.message}
-            </p>
-          )}
-        </div>
+          <FormElement.Error error={errors.password} errorFor="password" />
+        </FormElement> */}
         <Button aria-disabled={!isLoaded}>Accedi</Button>
       </form>
-      <p>
+      <p className="ui-text-type-me">
         Non hai un account?{" "}
         <Link
           href={`/signup${
@@ -110,7 +132,7 @@ export function SignInForm() {
               ? "?".concat(searchParams.toString())
               : ""
           }`}
-          className="ui-text-teal-700"
+          className="ui-text-type-link-me"
         >
           Registrati
         </Link>
