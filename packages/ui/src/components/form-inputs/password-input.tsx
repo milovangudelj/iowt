@@ -20,7 +20,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
     };
     return (
       <div
-        className={`ui-flex ui-overflow-hidden ui-items-center ui-bg-surface-2 ui-transition hover:ui-border-teal-600 ui-rounded-lg ui-border ui-border-rounded-lg ${
+        className={`ui-bg-transparent ui-flex ui-overflow-hidden ui-items-center ui-transition hover:ui-border-teal-600 ui-rounded-lg ui-border ui-border-rounded-lg ${
           inputFocused
             ? "ui-ring-teal-900 ui-ring-4 ui-border-teal-600"
             : "ui-border-outline-primary"
@@ -42,7 +42,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
         />
         <button
           type="button"
-          className="focus:ui-bg-surface-3 focus:ui-ring-0 focus:ui-outline-none ui-p-3 hover:ui-bg-surface-3"
+          className="focus:ui-bg-surface-2 focus:ui-ring-0 focus:ui-outline-none ui-p-3 hover:ui-bg-surface-2 ui-border-l ui-border-outline-primary"
           onClick={handleVisibilityToggle}
         >
           {passwordVisible ? <Eye size={16} /> : <EyeClosed size={16} />}

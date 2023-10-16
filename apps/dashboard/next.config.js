@@ -11,7 +11,7 @@ const nextConfig = {
       },
     ],
   },
-  transpilePackages: ["ui"],
+  transpilePackages: ["ui", "flags"],
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.plugins = [...config.plugins, new PrismaPlugin()];

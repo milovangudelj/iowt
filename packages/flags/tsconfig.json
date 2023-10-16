@@ -4,7 +4,6 @@
     "noEmit": false,
     "emitDeclarationOnly": true,
     "outDir": "dist"
-    // "types": ["node"]
   },
   "include": ["./countries/**/*"],
   "exclude": ["dist", "build", "node_modules", "./countries/svg/**/*"]

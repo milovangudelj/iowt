@@ -1,16 +1,30 @@
 {
   "name": "flags",
   "version": "0.0.0",
-  "main": "./index.ts",
-  "types": "./index.ts",
+  "type": "module",
+  "main": "./index.tsx",
+  "types": "./index.tsx",
+  "files": [
+    "index.tsx",
+    "countries"
+  ],
+  "exports": {
+    ".": "./index.tsx",
+    "./countries": "./countries/index.tsx"
+  },
   "scripts": {
-    "test": "tsx ./index.ts"
+    "format": "prettier --write ./countries",
+    "generate": "tsx ./generate.ts"
   },
   "devDependencies": {
     "@types/node": "^20.8.5",
     "@types/react": "^18.2.22",
+    "prettier": "^3.0.3",
     "tsconfig": "workspace:*",
     "tsx": "^3.13.0",
     "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "next": "^13.5.4"
   }
 }
