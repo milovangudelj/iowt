@@ -72,7 +72,7 @@ export function SignUpForm() {
     defaultValues: {
       name: "",
       surname: "",
-      phoneNumber: "+39 347 678 7256",
+      phoneNumber: "",
       email: "",
       password: "",
       code: "",
