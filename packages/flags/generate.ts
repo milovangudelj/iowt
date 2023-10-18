@@ -12,7 +12,7 @@ fs.readdirSync(directoryPath).forEach((file) => {
     const countryCode = country.split(" - ")[0];
     const countryName = country.split(" - ")[1];
 
-    console.log(`  | "${countryCode}"`);
+    console.log(`${countryCode} - ${countryName}`);
   }
 });
 
