@@ -1,20 +1,8 @@
 "use client";
 
 import * as React from "react";
-import dynamic from "next/dynamic";
 
-const TextInput = dynamic(() =>
-  import("./form-inputs").then((mod) => mod.TextInput)
-);
-const EmailInput = dynamic(() =>
-  import("./form-inputs").then((mod) => mod.EmailInput)
-);
-const PasswordInput = dynamic(() =>
-  import("./form-inputs").then((mod) => mod.PasswordInput)
-);
-const TelInput = dynamic(() =>
-  import("./form-inputs").then((mod) => mod.TelInput)
-);
+import { TextInput, EmailInput, PasswordInput, TelInput } from "./form-inputs";
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "className"> {
