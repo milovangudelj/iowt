@@ -19,7 +19,7 @@ const TelInput = forwardRef<HTMLInputElement, TelInputProps>(
   ({ onFocus = () => {}, onBlur = () => {}, ...props }, ref) => {
     const [inputFocused, setInputFocused] = useState(false);
     const [country, setCountry] = useState(
-      countries.find((el) => el.code == "IT")!.code
+      countries.find((el) => el.code == "IT")!
     );
 
     const handleFocus = (value: boolean) => {
@@ -27,8 +27,7 @@ const TelInput = forwardRef<HTMLInputElement, TelInputProps>(
     };
 
     const handleCountryChange = (value: string) => {
-      console.log("newValue:", value);
-      setCountry(value as CountryCode);
+      setCountry(countries.find((el) => el.code === value)!);
     };
 
     return (
@@ -40,18 +39,20 @@ const TelInput = forwardRef<HTMLInputElement, TelInputProps>(
         }`}
       >
         <Select.Root
-          value={country}
+          value={country.code}
           onValueChange={handleCountryChange}
           defaultValue="IT"
         >
           <Select.Trigger
-            className="ui-flex ui-flex-none ui-p-3 ui-gap-2 ui-items-center ui-border-r ui-transition ui-border-outline-primary focus:ui-ring-0 focus:ui-outline-none focus:ui-border-r hover:ui-bg-surface-2"
+            className="ui-flex ui-flex-none ui-p-3 ui-gap-2 ui-items-center ui-border-r ui-transition ui-border-outline-primary focus:ui-ring-0 focus:ui-outline-none focus:ui-border-r hover:ui-bg-surface-2 focus:ui-bg-surface-2"
             aria-label="Prefisso"
+            onFocus={() => handleFocus(true)}
+            onBlur={() => handleFocus(false)}
           >
-            <Select.Value aria-label={country}>
-              <Flag country={country} size={16} />
+            <Select.Value aria-label={country.name}>
+              <Flag country={country.code} size={16} />
             </Select.Value>
-            <Select.Icon className="">
+            <Select.Icon>
               <CaretUpDown size={16} className="ui-text-type-me" />
             </Select.Icon>
           </Select.Trigger>
@@ -91,7 +92,7 @@ const TelInput = forwardRef<HTMLInputElement, TelInputProps>(
             handleFocus(false);
             onBlur(e);
           }}
-          className="ui-bg-transparent ui-border-none focus:ui-border-none focus:ui-ring-0 focus:ui-outline-none ui-flex-1 placeholder:ui-text-type-le"
+          className="ui-bg-transparent ui-border-none focus:ui-border-none focus:ui-ring-0 focus:ui-outline-none ui-flex-1 ui-min-w-0 placeholder:ui-text-type-le"
           ref={ref}
           {...props}
         />
