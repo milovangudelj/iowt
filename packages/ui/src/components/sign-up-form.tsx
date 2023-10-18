@@ -124,6 +124,7 @@ export function SignUpForm() {
   }
 
   const onSubmit: SubmitHandler<SignUpFormSchema> = async (data) => {
+    console.log("Is hook loaded?", isLoaded ? "Yes" : "No");
     if (!isLoaded) return;
 
     if (verificationInitiated) {
