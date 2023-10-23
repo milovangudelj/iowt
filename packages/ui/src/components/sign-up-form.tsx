@@ -7,7 +7,11 @@ import { redirect, useSearchParams } from "next/navigation";
 import { useEffect, useState, useContext } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { formatNumber, isValidNumberForRegion } from "libphonenumber-js";
-import { PhoneNumber, parsePhoneNumber } from "libphonenumber-js/max";
+import {
+  AsYouType,
+  PhoneNumber,
+  parsePhoneNumber,
+} from "libphonenumber-js/max";
 
 import { Button, Logo, PhoneCountryContext } from "./";
 import {
@@ -197,36 +201,10 @@ export function SignUpForm() {
             rules={{
               required: "Inserisci un numero di telefono valido.",
               validate: (value) => {
-                let parsedNumber: PhoneNumber;
-                let valid = false;
+                const asYouType = new AsYouType(country);
+                asYouType.input(value);
 
-                try {
-                  parsedNumber = parsePhoneNumber(value);
-
-                  setCountry((current) => {
-                    console.log(
-                      `country: ${current}\nnew: ${
-                        parsedNumber.country
-                      }\npossible: ${parsedNumber.getPossibleCountries()}\nvalid: ${parsedNumber.isValid()}`
-                    );
-
-                    const newCountry = parsedNumber.country ?? current;
-
-                    valid = isValidNumberForRegion(
-                      parsedNumber.nationalNumber,
-                      newCountry
-                    );
-
-                    return newCountry;
-                  });
-                } catch (e) {
-                  valid = isValidNumberForRegion(
-                    formatNumber(value, "NATIONAL"),
-                    country
-                  );
-                }
-
-                return valid
+                return asYouType.isValid()
                   ? true
                   : "Inserisci un numero di telefono valido per il paese selezionato.";
               },

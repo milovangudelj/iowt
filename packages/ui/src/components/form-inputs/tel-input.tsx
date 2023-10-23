@@ -10,6 +10,7 @@ import {
   getCountryCallingCode,
   parseIncompletePhoneNumber,
   CountryCode,
+  AsYouType,
 } from "libphonenumber-js/max";
 
 type PhoneCountryContextValue = {
@@ -28,15 +29,18 @@ export interface TelInputProps
 
 const TelInput = React.forwardRef<HTMLInputElement, TelInputProps>(
   (
-    { onFocus = () => {}, onBlur = () => {}, name = "phoneNumber", ...props },
+    {
+      onFocus = () => {},
+      onBlur = () => {},
+      onChange = () => {},
+      name = "phoneNumber",
+      ...props
+    },
     ref
   ) => {
     const [inputFocused, setInputFocused] = React.useState(false);
-
     const { country, setCountry } = React.useContext(PhoneCountryContext);
-
     const { setValue } = useFormContext();
-    const phoneNumber = useFormContext().watch<string>(name, "") as string;
 
     const handleFocus = (value: boolean) => {
       setInputFocused(value);
@@ -46,14 +50,21 @@ const TelInput = React.forwardRef<HTMLInputElement, TelInputProps>(
       setCountry(value as CountryCode);
     };
 
-    React.useEffect(() => {
-      const incompleteNumber = parseIncompletePhoneNumber(phoneNumber);
-      const formatted = formatIncompletePhoneNumber(incompleteNumber, country);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange(e);
 
-      if (phoneNumber.localeCompare(formatted) !== 0) {
-        setValue(name, formatted, { shouldValidate: true });
+      const value = e.target.value;
+
+      const asYouType = new AsYouType(country);
+      const formatted = asYouType.input(value);
+
+      const newCountry = asYouType.getCountry();
+      if (newCountry && newCountry !== country) {
+        setCountry(newCountry);
       }
-    }, [phoneNumber]);
+
+      setValue(name, formatted);
+    };
 
     return (
       <div
@@ -120,6 +131,7 @@ const TelInput = React.forwardRef<HTMLInputElement, TelInputProps>(
             handleFocus(false);
             onBlur(e);
           }}
+          onChange={handleChange}
           className="ui-bg-transparent ui-p-3 ui-leading-[1.25] ui-border-none focus:ui-border-none focus:ui-ring-0 focus:ui-outline-none ui-flex-1 ui-min-w-0 placeholder:ui-text-type-le"
           ref={ref}
           {...props}
