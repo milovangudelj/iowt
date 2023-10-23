@@ -1,11 +1,19 @@
-import { Metadata } from "next";
-import { AuthForm } from "ui";
+"use client";
 
-export const metadata: Metadata = {
-  title: "IOWT - Sign up",
-  description: "Sign up to access the IOWT Dashboard",
-};
+import * as React from "react";
+import { CountryCode } from "libphonenumber-js/max";
+import { PhoneCountryContext, AuthForm } from "ui";
 
-export default async function Page(): Promise<JSX.Element> {
-  return <AuthForm intent="signup" />;
+export default function Page() {
+  const [country, setCountry] = React.useState<CountryCode>("IT");
+
+  React.useEffect(() => {
+    console.log(country);
+  }, [country]);
+
+  return (
+    <PhoneCountryContext.Provider value={{ country, setCountry }}>
+      <AuthForm intent="signup" />
+    </PhoneCountryContext.Provider>
+  );
 }

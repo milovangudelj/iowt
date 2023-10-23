@@ -25,6 +25,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "libphonenumber-js": "^1.10.48",
     "next": "^13.5.4"
   }
 }

@@ -2,22 +2,17 @@
 
 import { useSignUp } from "@clerk/nextjs";
 import Link from "next/link";
-import { redirect, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import {
-  parsePhoneNumber,
-  CountryCode,
-  formatIncompletePhoneNumber,
-} from "libphonenumber-js/mobile";
+import { redirect, useSearchParams } from "next/navigation";
+import { useEffect, useState, useContext } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { formatNumber, isValidNumberForRegion } from "libphonenumber-js";
+import { PhoneNumber, parsePhoneNumber } from "libphonenumber-js/max";
 
-import { Button, Logo } from "./";
+import { Button, Logo, PhoneCountryContext } from "./";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,36 +20,14 @@ import {
 } from "./form";
 import { Input } from "./input";
 
-const schema = z.object({
-  name: z
-    .string()
-    .min(1, { message: "Inserisci il tuo nome per registrarti." }),
-  surname: z
-    .string()
-    .min(1, { message: "Inserisci il tuo cognome per registrarti." }),
-  phoneNumber: z.string().refine(
-    (value) => {
-      const phoneNumber = parsePhoneNumber(value, "IT");
-      return phoneNumber.isValid();
-    },
-    { message: "Inserisci un numero di telefono valido." }
-  ),
-  email: z
-    .string()
-    .email({ message: "Inserisci un indirizzo email valido." })
-    .min(1, { message: "Inserisci la tua email per accedere." }),
-  password: z
-    .string()
-    .min(12, { message: "La password deve essere lunga almeno 12 caratteri." })
-    .max(64, { message: "La password non deve avere più di 64 caratteri." }),
-  code: z
-    .string()
-    .regex(/^\d*$/, { message: "Inserisci un codice numerico valido." })
-    .min(6, { message: "Il codice deve essere lungo 6 cifre." })
-    .max(6, { message: "Il codice deve essere lungo 6 cifre." })
-    .optional(),
-});
-type SignUpFormSchema = z.infer<typeof schema>;
+type SignUpFormSchema = {
+  name: string;
+  surname: string;
+  phoneNumber: string;
+  email: string;
+  password: string;
+  code?: string;
+};
 
 const errorMessages: { [key: string]: string } = {
   form_identifier_exists: "Questa email è già collegata ad un account.",
@@ -64,11 +37,9 @@ const errorMessages: { [key: string]: string } = {
 export function SignUpForm() {
   const searchParams = useSearchParams();
   const [verificationInitiated, setVerificationInitiated] = useState(false);
-
-  // const [phoneCountry, setPhoneCountry] = useState<CountryCode>("IT");
+  const { country, setCountry } = useContext(PhoneCountryContext);
 
   const form = useForm<SignUpFormSchema>({
-    resolver: zodResolver(schema),
     defaultValues: {
       name: "",
       surname: "",
@@ -78,18 +49,6 @@ export function SignUpForm() {
       code: "",
     },
   });
-  const watchPhoneNumber = form.watch("phoneNumber");
-
-  // useEffect(() => {
-  //   const phoneNumber = formatIncompletePhoneNumber(
-  //     watchPhoneNumber,
-  //     phoneCountry
-  //   );
-
-  //   console.log(phoneNumber);
-
-  //   form.setValue("phoneNumber", phoneNumber);
-  // }, [watchPhoneNumber, phoneCountry]);
 
   const { isLoaded, signUp, setActive } = useSignUp();
 
@@ -125,7 +84,11 @@ export function SignUpForm() {
 
   const onSubmit: SubmitHandler<SignUpFormSchema> = async (data) => {
     console.log("Is hook loaded?", isLoaded ? "Yes" : "No");
-    if (!isLoaded) return;
+    // if (!isLoaded) return;
+
+    console.log("Do nothing for now.");
+
+    return;
 
     if (verificationInitiated) {
       if (data.code === undefined) {
@@ -135,7 +98,7 @@ export function SignUpForm() {
         return;
       }
 
-      return handleVerification(data.code);
+      return handleVerification(data.code ?? "");
     }
 
     await signUp
@@ -149,6 +112,7 @@ export function SignUpForm() {
         },
       })
       .then(() => {
+        if (!signUp) return;
         signUp.prepareEmailAddressVerification();
         setVerificationInitiated(true);
       })
@@ -232,6 +196,40 @@ export function SignUpForm() {
             control={form.control}
             rules={{
               required: "Inserisci un numero di telefono valido.",
+              validate: (value) => {
+                let parsedNumber: PhoneNumber;
+                let valid = false;
+
+                try {
+                  parsedNumber = parsePhoneNumber(value);
+
+                  setCountry((current) => {
+                    console.log(
+                      `country: ${current}\nnew: ${
+                        parsedNumber.country
+                      }\npossible: ${parsedNumber.getPossibleCountries()}\nvalid: ${parsedNumber.isValid()}`
+                    );
+
+                    const newCountry = parsedNumber.country ?? current;
+
+                    valid = isValidNumberForRegion(
+                      parsedNumber.nationalNumber,
+                      newCountry
+                    );
+
+                    return newCountry;
+                  });
+                } catch (e) {
+                  valid = isValidNumberForRegion(
+                    formatNumber(value, "NATIONAL"),
+                    country
+                  );
+                }
+
+                return valid
+                  ? true
+                  : "Inserisci un numero di telefono valido per il paese selezionato.";
+              },
             }}
             name="phoneNumber"
             render={({ field }) => (
@@ -249,6 +247,16 @@ export function SignUpForm() {
             name="email"
             rules={{
               required: "Inserisci la tua email per accedere.",
+              pattern: {
+                value: /^\S+@\S+$/i,
+                message: "Inserisci un indirizzo email valido.",
+              },
+              validate: (value) => {
+                const isValid = z.string().email().safeParse(value).success;
+                return isValid
+                  ? true
+                  : "Inserisci un indirizzo email valido per il paese selezionato.";
+              },
             }}
             render={({ field }) => (
               <FormItem visible={!verificationInitiated}>
@@ -269,6 +277,14 @@ export function SignUpForm() {
             name="password"
             rules={{
               required: "La password deve essere lunga almeno 12 caratteri.",
+              minLength: {
+                value: 12,
+                message: "La password deve essere lunga almeno 12 caratteri.",
+              },
+              maxLength: {
+                value: 64,
+                message: "La password non deve avere più di 64 caratteri.",
+              },
             }}
             render={({ field }) => (
               <FormItem visible={!verificationInitiated}>
@@ -287,6 +303,20 @@ export function SignUpForm() {
           <FormField
             control={form.control}
             name="code"
+            rules={{
+              pattern: {
+                value: /^\d*$/,
+                message: "Inserisci un codice numerico valido.",
+              },
+              minLength: {
+                value: 6,
+                message: "Il codice deve essere lungo 6 cifre.",
+              },
+              maxLength: {
+                value: 6,
+                message: "Il codice deve essere lungo 6 cifre.",
+              },
+            }}
             render={({ field }) => (
               <FormItem visible={verificationInitiated}>
                 <FormLabel>Codice</FormLabel>
@@ -302,9 +332,7 @@ export function SignUpForm() {
               </FormItem>
             )}
           />
-          <Button disabled={!isLoaded} aria-disabled={!isLoaded}>
-            {verificationInitiated ? "Verifica" : "Registrati"}
-          </Button>
+          <Button>{verificationInitiated ? "Verifica" : "Registrati"}</Button>
         </form>
       </Form>
       <p className="ui-text-type-me">

@@ -1,34 +1,59 @@
 "use client";
 
-import {
-  ComponentPropsWithoutRef,
-  ElementRef,
-  InputHTMLAttributes,
-  RefAttributes,
-  forwardRef,
-  useState,
-} from "react";
+import * as React from "react";
 import * as Select from "@radix-ui/react-select";
 import { CaretDown, CaretUp, CaretUpDown, Check } from "icons";
-import { Flag, CountryCode, countries, countriesByName } from "flags";
+import { Flag, countries, countriesByName } from "flags";
+import { useFormContext } from "react-hook-form";
+import {
+  formatIncompletePhoneNumber,
+  getCountryCallingCode,
+  parseIncompletePhoneNumber,
+  CountryCode,
+} from "libphonenumber-js/max";
+
+type PhoneCountryContextValue = {
+  country: CountryCode;
+  setCountry: React.Dispatch<React.SetStateAction<CountryCode>>;
+};
+
+export const PhoneCountryContext =
+  React.createContext<PhoneCountryContextValue>({} as PhoneCountryContextValue);
 
 export interface TelInputProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "type"> {}
+  extends Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    "className" | "type"
+  > {}
 
-const TelInput = forwardRef<HTMLInputElement, TelInputProps>(
-  ({ onFocus = () => {}, onBlur = () => {}, ...props }, ref) => {
-    const [inputFocused, setInputFocused] = useState(false);
-    const [country, setCountry] = useState(
-      countries.find((el) => el.code == "IT")!
-    );
+const TelInput = React.forwardRef<HTMLInputElement, TelInputProps>(
+  (
+    { onFocus = () => {}, onBlur = () => {}, name = "phoneNumber", ...props },
+    ref
+  ) => {
+    const [inputFocused, setInputFocused] = React.useState(false);
+
+    const { country, setCountry } = React.useContext(PhoneCountryContext);
+
+    const { setValue } = useFormContext();
+    const phoneNumber = useFormContext().watch<string>(name, "") as string;
 
     const handleFocus = (value: boolean) => {
       setInputFocused(value);
     };
 
     const handleCountryChange = (value: string) => {
-      setCountry(countries.find((el) => el.code === value)!);
+      setCountry(value as CountryCode);
     };
+
+    React.useEffect(() => {
+      const incompleteNumber = parseIncompletePhoneNumber(phoneNumber);
+      const formatted = formatIncompletePhoneNumber(incompleteNumber, country);
+
+      if (phoneNumber.localeCompare(formatted) !== 0) {
+        setValue(name, formatted, { shouldValidate: true });
+      }
+    }, [phoneNumber]);
 
     return (
       <div
@@ -39,18 +64,20 @@ const TelInput = forwardRef<HTMLInputElement, TelInputProps>(
         }`}
       >
         <Select.Root
-          value={country.code}
+          value={country}
           onValueChange={handleCountryChange}
           defaultValue="IT"
         >
           <Select.Trigger
-            className="ui-flex ui-flex-none ui-p-3 ui-gap-2 ui-items-center ui-border-r ui-transition ui-border-outline-primary focus:ui-ring-0 focus:ui-outline-none focus:ui-border-r hover:ui-bg-surface-2 focus:ui-bg-surface-2"
+            className="ui-flex ui-flex-none [&>*]:[display:inherit] ui-self-stretch ui-p-3 ui-gap-2 ui-items-center ui-border-r ui-transition ui-border-outline-primary focus:ui-ring-0 focus:ui-outline-none focus:ui-border-r hover:ui-bg-surface-2 focus:ui-bg-surface-2"
             aria-label="Prefisso"
             onFocus={() => handleFocus(true)}
             onBlur={() => handleFocus(false)}
           >
-            <Select.Value aria-label={country.name}>
-              <Flag country={country.code} size={16} />
+            <Select.Value
+              aria-label={countries.find((el) => el.code === country)!.name}
+            >
+              <Flag country={country} size={16} />
             </Select.Value>
             <Select.Icon>
               <CaretUpDown size={16} className="ui-text-type-me" />
@@ -70,7 +97,7 @@ const TelInput = forwardRef<HTMLInputElement, TelInputProps>(
                         {el.name}
                       </span>
                       <span className="ui-flex-none ui-text-type-le ui-text-xs ui-leading-[1.25]">
-                        {el.prefix}
+                        +{getCountryCallingCode(el.code)}
                       </span>
                     </div>
                   </SelectItem>
@@ -84,6 +111,7 @@ const TelInput = forwardRef<HTMLInputElement, TelInputProps>(
         </Select.Root>
         <input
           type="tel"
+          name={name}
           onFocus={(e) => {
             handleFocus(true);
             onFocus(e);
@@ -92,7 +120,7 @@ const TelInput = forwardRef<HTMLInputElement, TelInputProps>(
             handleFocus(false);
             onBlur(e);
           }}
-          className="ui-bg-transparent ui-border-none focus:ui-border-none focus:ui-ring-0 focus:ui-outline-none ui-flex-1 ui-min-w-0 placeholder:ui-text-type-le"
+          className="ui-bg-transparent ui-p-3 ui-leading-[1.25] ui-border-none focus:ui-border-none focus:ui-ring-0 focus:ui-outline-none ui-flex-1 ui-min-w-0 placeholder:ui-text-type-le"
           ref={ref}
           {...props}
         />
@@ -104,9 +132,9 @@ TelInput.displayName = "TelInput";
 
 export { TelInput };
 
-const SelectItem = forwardRef<
-  ElementRef<typeof Select.SelectItem>,
-  Omit<ComponentPropsWithoutRef<typeof Select.SelectItem>, "className">
+const SelectItem = React.forwardRef<
+  React.ElementRef<typeof Select.SelectItem>,
+  Omit<React.ComponentPropsWithoutRef<typeof Select.SelectItem>, "className">
 >(({ children, ...props }, ref) => {
   return (
     <Select.Item

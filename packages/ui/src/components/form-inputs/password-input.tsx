@@ -36,13 +36,13 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
             handleFocus(false);
             onBlur(e);
           }}
-          className="ui-bg-transparent ui-border-none focus:ui-border-none focus:ui-ring-0 focus:ui-outline-none ui-flex-1 placeholder:ui-text-type-le"
+          className="ui-bg-transparent ui-p-3 ui-leading-[1.25] ui-border-none focus:ui-border-none focus:ui-ring-0 focus:ui-outline-none ui-flex-1 placeholder:ui-text-type-le"
           ref={ref}
           {...props}
         />
         <button
           type="button"
-          className="focus:ui-bg-surface-2 focus:ui-ring-0 focus:ui-outline-none ui-p-3 hover:ui-bg-surface-2 ui-border-l ui-border-outline-primary"
+          className="focus:ui-bg-surface-2 focus:ui-ring-0 focus:ui-outline-none ui-p-3 hover:ui-bg-surface-2 ui-border-l ui-border-outline-primary ui-self-stretch ui-flex ui-items-center"
           onClick={handleVisibilityToggle}
         >
           {passwordVisible ? <Eye size={16} /> : <EyeClosed size={16} />}
