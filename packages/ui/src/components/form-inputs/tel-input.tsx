@@ -82,8 +82,6 @@ const TelInput = React.forwardRef<HTMLInputElement, TelInputProps>(
           <Select.Trigger
             className="ui-flex ui-flex-none [&>*]:[display:inherit] ui-self-stretch ui-p-3 ui-gap-2 ui-items-center ui-border-r ui-transition ui-border-outline-primary focus:ui-ring-0 focus:ui-outline-none focus:ui-border-r hover:ui-bg-surface-2 focus:ui-bg-surface-2"
             aria-label="Prefisso"
-            onFocus={() => handleFocus(true)}
-            onBlur={() => handleFocus(false)}
           >
             <Select.Value
               aria-label={countries.find((el) => el.code === country)!.name}
