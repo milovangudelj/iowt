@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as Select from "@radix-ui/react-select";
-import { useFormContext } from "react-hook-form";
+import { set, useFormContext } from "react-hook-form";
 import {
   getCountryCallingCode,
   CountryCode,
@@ -38,21 +38,21 @@ const TelInput = React.forwardRef<HTMLInputElement, TelInputProps>(
   ) => {
     const [inputFocused, setInputFocused] = React.useState(false);
     const { country, setCountry } = React.useContext(PhoneCountryContext);
-    const { getValues, setValue } = useFormContext();
+    const [number, setNumber] = React.useState("");
+    const { setValue } = useFormContext();
 
     const handleFocus = (value: boolean) => {
       setInputFocused(value);
     };
 
-    const handleCountryChange = (value: string) => {
-      setCountry(value as CountryCode);
+    const handleCountryChange = (newCountry: string) => {
+      setCountry(newCountry as CountryCode);
 
-      const phoneNumber = getValues(name);
-
-      const asYouType = new AsYouType(country);
-      const formatted = asYouType.input(phoneNumber);
+      const asYouType = new AsYouType(newCountry as CountryCode);
+      const formatted = asYouType.input(number);
 
       setValue(name, formatted);
+      setNumber(formatted);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +69,7 @@ const TelInput = React.forwardRef<HTMLInputElement, TelInputProps>(
       }
 
       setValue(name, formatted);
+      setNumber(formatted);
     };
 
     return (
