@@ -6,7 +6,7 @@ import Link from "next/link";
 import { redirect, useSearchParams } from "next/navigation";
 import { useSignUp } from "@clerk/nextjs";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { AsYouType } from "libphonenumber-js/max";
+import { AsYouType, parsePhoneNumber } from "libphonenumber-js/max";
 
 import { Button, Logo, PhoneCountryContext, Input } from "./";
 import {
@@ -83,11 +83,7 @@ export function SignUpForm() {
 
   const onSubmit: SubmitHandler<SignUpFormSchema> = async (data) => {
     console.log("Is hook loaded?", isLoaded ? "Yes" : "No");
-    // if (!isLoaded) return;
-
-    console.log("Do nothing for now.");
-
-    return;
+    if (!isLoaded) return;
 
     if (verificationInitiated) {
       if (data.code === undefined) {
@@ -97,7 +93,7 @@ export function SignUpForm() {
         return;
       }
 
-      return handleVerification(data.code ?? "");
+      return handleVerification(data.code);
     }
 
     await signUp
@@ -106,12 +102,18 @@ export function SignUpForm() {
         password: data.password,
         firstName: data.name,
         lastName: data.surname,
+        phoneNumber: parsePhoneNumber(
+          data.phoneNumber,
+          country
+        ).formatInternational(),
         unsafeMetadata: {
-          phoneNumber: data.phoneNumber,
+          phoneNumber: parsePhoneNumber(
+            data.phoneNumber,
+            country
+          ).formatInternational(),
         },
       })
       .then(() => {
-        if (!signUp) return;
         signUp.prepareEmailAddressVerification();
         setVerificationInitiated(true);
       })
