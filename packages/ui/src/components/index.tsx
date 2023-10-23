@@ -9,4 +9,5 @@ export * from "./auth-form";
 export * from "./sign-in-form";
 export * from "./sign-up-form";
 export * from "./label";
+export * from "./input";
 export { PhoneCountryContext } from "./form-inputs/tel-input";

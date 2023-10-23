@@ -1,19 +1,14 @@
 "use client";
 
-import { useSignUp } from "@clerk/nextjs";
-import Link from "next/link";
+import * as React from "react";
 import * as z from "zod";
+import Link from "next/link";
 import { redirect, useSearchParams } from "next/navigation";
-import { useEffect, useState, useContext } from "react";
+import { useSignUp } from "@clerk/nextjs";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { formatNumber, isValidNumberForRegion } from "libphonenumber-js";
-import {
-  AsYouType,
-  PhoneNumber,
-  parsePhoneNumber,
-} from "libphonenumber-js/max";
+import { AsYouType } from "libphonenumber-js/max";
 
-import { Button, Logo, PhoneCountryContext } from "./";
+import { Button, Logo, PhoneCountryContext, Input } from "./";
 import {
   Form,
   FormControl,
@@ -22,7 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from "./form";
-import { Input } from "./input";
 
 type SignUpFormSchema = {
   name: string;
@@ -40,8 +34,9 @@ const errorMessages: { [key: string]: string } = {
 
 export function SignUpForm() {
   const searchParams = useSearchParams();
-  const [verificationInitiated, setVerificationInitiated] = useState(false);
-  const { country, setCountry } = useContext(PhoneCountryContext);
+  const [verificationInitiated, setVerificationInitiated] =
+    React.useState(false);
+  const { country } = React.useContext(PhoneCountryContext);
 
   const form = useForm<SignUpFormSchema>({
     defaultValues: {

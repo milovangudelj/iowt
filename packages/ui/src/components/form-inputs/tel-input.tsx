@@ -2,16 +2,14 @@
 
 import * as React from "react";
 import * as Select from "@radix-ui/react-select";
-import { CaretDown, CaretUp, CaretUpDown, Check } from "icons";
-import { Flag, countries, countriesByName } from "flags";
 import { useFormContext } from "react-hook-form";
 import {
-  formatIncompletePhoneNumber,
   getCountryCallingCode,
-  parseIncompletePhoneNumber,
   CountryCode,
   AsYouType,
 } from "libphonenumber-js/max";
+import { CaretDown, CaretUp, CaretUpDown, Check } from "icons";
+import { Flag, countries, countriesByName } from "flags";
 
 type PhoneCountryContextValue = {
   country: CountryCode;
