@@ -307,7 +307,9 @@ export function SignUpForm() {
               </FormItem>
             )}
           />
-          <Button>{verificationInitiated ? "Verifica" : "Registrati"}</Button>
+          <Button disabled={!isLoaded} aria-disabled={!isLoaded}>
+            {verificationInitiated ? "Verifica" : "Registrati"}
+          </Button>
         </form>
       </Form>
       <p className="ui-text-type-me">
