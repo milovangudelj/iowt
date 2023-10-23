@@ -58,6 +58,7 @@ export function SignUpForm() {
         if (result.status === "complete" && result.createdUserId) {
           setActive({ session: result.createdSessionId });
 
+          // Won't work cause middleware redirects the request thinking it's not authenticated
           await fetch("/api/completeUser", {
             method: "POST",
             body: JSON.stringify({
@@ -106,12 +107,6 @@ export function SignUpForm() {
           data.phoneNumber,
           country
         ).formatInternational(),
-        unsafeMetadata: {
-          phoneNumber: parsePhoneNumber(
-            data.phoneNumber,
-            country
-          ).formatInternational(),
-        },
       })
       .then(() => {
         signUp.prepareEmailAddressVerification();
