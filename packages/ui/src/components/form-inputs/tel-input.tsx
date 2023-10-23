@@ -38,7 +38,7 @@ const TelInput = React.forwardRef<HTMLInputElement, TelInputProps>(
   ) => {
     const [inputFocused, setInputFocused] = React.useState(false);
     const { country, setCountry } = React.useContext(PhoneCountryContext);
-    const { setValue } = useFormContext();
+    const { getValues, setValue } = useFormContext();
 
     const handleFocus = (value: boolean) => {
       setInputFocused(value);
@@ -46,6 +46,13 @@ const TelInput = React.forwardRef<HTMLInputElement, TelInputProps>(
 
     const handleCountryChange = (value: string) => {
       setCountry(value as CountryCode);
+
+      const phoneNumber = getValues(name);
+
+      const asYouType = new AsYouType(country);
+      const formatted = asYouType.input(phoneNumber);
+
+      setValue(name, formatted);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
