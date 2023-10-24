@@ -17,6 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "./form";
+import { isValidNumberForRegion } from "libphonenumber-js";
 
 type SignUpFormSchema = {
   name: string;
@@ -196,7 +197,15 @@ export function SignUpForm() {
                 const asYouType = new AsYouType(country);
                 asYouType.input(value);
 
-                return asYouType.isValid()
+                const valid =
+                  asYouType.isValid() &&
+                  asYouType.getNumber() !== undefined &&
+                  isValidNumberForRegion(
+                    asYouType.getNumber()!.formatNational(),
+                    country
+                  );
+
+                return valid
                   ? true
                   : "Inserisci un numero di telefono valido per il paese selezionato.";
               },
