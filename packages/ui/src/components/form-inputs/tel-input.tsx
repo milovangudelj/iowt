@@ -154,7 +154,7 @@ const SelectItem = React.forwardRef<
 >(({ children, ...props }, ref) => {
   return (
     <Select.Item
-      className="ui-flex data-[state=unchecked]:ui-pl-10 data-[state=checked]:ui-bg-surface-3 ui-gap-3 ui-p-3 ui-transition ui-items-center focus:ui-ring-0 focus:ui-outline-none focus:ui-border-none ui-cursor-pointer hover:ui-bg-surface-3"
+      className="ui-flex data-[state=unchecked]:ui-pl-10 data-[state=checked]:ui-bg-surface-3 data-[highlighted]:ui-bg-surface-3 ui-gap-3 ui-p-3 ui-transition ui-items-center focus:ui-ring-0 focus:ui-outline-none focus:ui-border-none ui-cursor-pointer hover:ui-bg-surface-3"
       {...props}
       ref={ref}
     >
