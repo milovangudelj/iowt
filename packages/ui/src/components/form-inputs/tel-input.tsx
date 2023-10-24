@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as Select from "@radix-ui/react-select";
-import { set, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import {
   getCountryCallingCode,
   CountryCode,

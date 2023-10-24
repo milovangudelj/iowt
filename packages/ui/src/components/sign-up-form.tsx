@@ -6,6 +6,7 @@ import Link from "next/link";
 import { redirect, useSearchParams } from "next/navigation";
 import { useSignUp } from "@clerk/nextjs";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { isValidNumberForRegion } from "libphonenumber-js";
 import { AsYouType, parsePhoneNumber } from "libphonenumber-js/max";
 
 import { Button, Logo, PhoneCountryContext, Input } from "./";
@@ -17,7 +18,6 @@ import {
   FormLabel,
   FormMessage,
 } from "./form";
-import { isValidNumberForRegion } from "libphonenumber-js";
 
 type SignUpFormSchema = {
   name: string;
