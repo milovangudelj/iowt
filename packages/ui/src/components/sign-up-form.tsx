@@ -226,15 +226,9 @@ export function SignUpForm() {
             name="email"
             rules={{
               required: "Inserisci la tua email per accedere.",
-              pattern: {
-                value: /^\S+@\S+$/i,
-                message: "Inserisci un indirizzo email valido.",
-              },
               validate: (value) => {
                 const isValid = z.string().email().safeParse(value).success;
-                return isValid
-                  ? true
-                  : "Inserisci un indirizzo email valido per il paese selezionato.";
+                return isValid ? true : "Inserisci un indirizzo email valido.";
               },
             }}
             render={({ field }) => (
