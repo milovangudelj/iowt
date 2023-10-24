@@ -21,7 +21,7 @@ export default function RootLayout({
           <main className="flex-1 min-h-full flex items-center justify-center">
             {children}
           </main>
-          <div className="flex-1 min-h-full">
+          <div className="flex-1 min-h-full max-md:hidden">
             <Image
               src={cover}
               alt="Un gruppo di nuotatori in mare durante il Crana Swim Series 2019"
