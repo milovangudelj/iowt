@@ -75,13 +75,6 @@ export function SignInForm() {
           Per continuare su Italian Open Water Tour
         </p>
       </header>
-      <div className="ui-flex ui-items-center ui-gap-2">
-        <span className="ui-inline-block ui-h-px ui-flex-1 ui-bg-outline-primary"></span>
-        <span className="ui-text-sm ui-leading-[1.25] ui-text-type-le">
-          oppure
-        </span>
-        <span className="ui-inline-block ui-h-px ui-flex-1 ui-bg-outline-primary"></span>
-      </div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
