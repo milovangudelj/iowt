@@ -23,6 +23,7 @@
     "flags": "workspace:*",
     "iowt-tailwind-config": "workspace:*",
     "libphonenumber-js": "^1.10.48",
+    "little-state-machine": "^4.8.0",
     "next": "13.5.2",
     "postcss": "8.4.30",
     "react": "^18.2.0",
