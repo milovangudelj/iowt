@@ -27,7 +27,7 @@ export default function RootLayout({
           className={`bg-surface-1 min-h-[100dvh] max-h-[100dvh] flex ${inter.className}`}
         >
           <Navbar />
-          <main className="max-w-7xl max-h-full mx-auto my-16 w-full flex flex-col gap-8">
+          <main className="max-w-7xl bg-surface-2 max-h-full mx-auto p-16 w-full flex flex-col gap-8">
             {children}
           </main>
         </body>

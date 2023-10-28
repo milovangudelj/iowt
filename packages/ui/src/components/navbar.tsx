@@ -5,9 +5,9 @@ import { NavLink, Logo, NavUser } from "./";
 
 export function Navbar(): JSX.Element {
   return (
-    <div className="ui-flex-1 ui-flex ui-flex-col ui-max-w-xs ui-px-4 ui-py-8 ui-gap-6 ui-border-outline-primary ui-border-r">
-      <div className="flex ui-items-center ui-justify-between ui-pb-6 ui-border-b ui-border-outline-primary">
-        <Link href="/" className="flex ui-gap-2 ui-items-center">
+    <div className="ui-flex-none ui-flex ui-flex-col ui-w-72 ui-px-4 ui-py-8 ui-gap-6 ui-border-outline-primary ui-border-r">
+      <div className="ui-flex ui-items-center ui-justify-between ui-pb-6 ui-border-b ui-border-outline-primary">
+        <Link href="/" className="ui-flex ui-gap-2 ui-items-center">
           <Logo />
           <span className="ui-text-[19.2px] ui-font-medium">IOWT</span>
         </Link>
@@ -15,7 +15,7 @@ export function Navbar(): JSX.Element {
           <Sun size={16} />
         </button>
       </div>
-      <nav className="flex-1">
+      <nav className="ui-flex-1">
         <ul className="ui-gap-1 ui-flex ui-flex-col">
           <li>
             <NavLink href="/eventi" icon={<Calendar size={20} />}>

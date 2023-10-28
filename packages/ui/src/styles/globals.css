@@ -110,36 +110,36 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-      /* Tokens */
+    /* Tokens */
 
-  --color-surface-1: var(--color-gray-950);
-  --color-surface-2: var(--color-gray-900);
-  --color-surface-3: var(--color-gray-800);
+    --color-surface-1: var(--color-gray-950);
+    --color-surface-2: var(--color-gray-900);
+    --color-surface-3: var(--color-gray-800);
 
-  --color-surface-brand-1: var(--color-teal-500);
-  --color-surface-brand-2: var(--color-teal-600);
-  --color-surface-brand-3: var(--color-teal-700);
+    --color-surface-brand-1: var(--color-teal-500);
+    --color-surface-brand-2: var(--color-teal-600);
+    --color-surface-brand-3: var(--color-teal-700);
 
-  --color-surface-inverted-1: var(--color-gray-200);
-  --color-surface-inverted-2: var(--color-gray-100);
-  --color-surface-inverted-3: var(--color-gray-50);
+    --color-surface-inverted-1: var(--color-gray-200);
+    --color-surface-inverted-2: var(--color-gray-100);
+    --color-surface-inverted-3: var(--color-gray-50);
 
-  --color-type-he: var(--color-white-he);
-  --color-type-me: var(--color-white-me);
-  --color-type-le: var(--color-white-le);
+    --color-type-he: var(--color-white-he);
+    --color-type-me: var(--color-white-me);
+    --color-type-le: var(--color-white-le);
 
-  --color-type-brand-he: var(--color-black-he);
-  --color-type-brand-me: var(--color-black-me);
-  --color-type-brand-le: var(--color-black-le);
+    --color-type-brand-he: var(--color-black-he);
+    --color-type-brand-me: var(--color-black-me);
+    --color-type-brand-le: var(--color-black-le);
 
-  --color-type-inverted-he: var(--color-black-he);
-  --color-type-inverted-me: var(--color-black-me);
-  --color-type-inverted-le: var(--color-black-le);
+    --color-type-inverted-he: var(--color-black-he);
+    --color-type-inverted-me: var(--color-black-me);
+    --color-type-inverted-le: var(--color-black-le);
 
-  --color-type-link-he: var(--color-teal-500);
-  --color-type-link-me: var(--color-teal-700);
-  --color-type-link-le: var(--color-teal-800);
+    --color-type-link-he: var(--color-teal-500);
+    --color-type-link-me: var(--color-teal-700);
+    --color-type-link-le: var(--color-teal-800);
 
-  --color-outline-primary: var(--color-white-outline);
+    --color-outline-primary: var(--color-white-outline);
   }
 }
